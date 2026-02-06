@@ -12,7 +12,7 @@ const Dashboard = () => {
 
   // بيانات الرسم البياني (الأرباح والعمولات)
   const chartData = [
-    { name: 'Hotel Profits', value: 450, color: '#3b82f6' }, // أزرق
+    { name: 'Company Profits', value: 450, color: '#3b82f6' }, // أزرق
     { name: 'Commissions', value: 300, color: '#f97316' },  // برتقالي
     { name: 'Transport', value: 200, color: '#22c55e' },    // أخضر
     { name: 'Others', value: 100, color: '#64748b' },       // رمادي
