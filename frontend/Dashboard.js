@@ -1,42 +1,48 @@
-import React, { useState } from 'react';
-import { 
-  PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend 
-} from 'recharts';
-import { 
-  Bell, User, Menu, Globe, Home, Calendar, Users, 
-  Briefcase, Hotel, Landmark, Settings, FileText, Bus 
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { Bell, Menu, Globe, Home, Calendar, Users, Briefcase, Hotel, Landmark, Settings, FileText, Bus } from 'lucide-react';
 
 const Dashboard = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(true);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // بيانات الرسم البياني (الأرباح والعمولات)
+  // الرابط الخاص بك الذي استخرجته من Codespaces
+  const API_URL = "https://zany-space-doodle-q7r9v9pgv7vrh4rjv-3000.app.github.dev/api/bookings";
+
+  // جلب البيانات من السيرفر عند فتح الصفحة
+  useEffect(() => {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        setBookings(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Error fetching data:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // بيانات الرسم البياني
   const chartData = [
-    { name: 'Company Profits', value: 450, color: '#3b82f6' }, // أزرق
-    { name: 'Commissions', value: 300, color: '#f97316' },  // برتقالي
-    { name: 'Transport', value: 200, color: '#22c55e' },    // أخضر
-    { name: 'Others', value: 100, color: '#64748b' },       // رمادي
-  ];
-
-  // إعدادات الكروت العلوية
-  const cards = [
-    { title: "Reservation", color: "bg-blue-500", count: "120", icon: <Calendar size={20}/> },
-    { title: "All Booking", color: "bg-orange-500", count: "450", icon: <Briefcase size={20}/> },
-    { title: "Customers", color: "bg-green-500", count: "890", icon: <Users size={20}/> },
-    { title: "Accounting", color: "bg-emerald-400", count: "Active", icon: <Landmark size={20}/> },
+    { name: 'Hotel Profits', value: 450, color: '#3b82f6' },
+    { name: 'Commissions', value: 300, color: '#f97316' },
+    { name: 'Transport', value: 200, color: '#22c55e' },
+    { name: 'Others', value: 100, color: '#64748b' },
   ];
 
   return (
-    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden">
+    <div className="flex h-screen bg-slate-50 font-sans overflow-hidden text-slate-900">
       
       {/* --- SIDEBAR --- */}
       <aside className={`${isSidebarOpen ? 'w-64' : 'w-20'} bg-slate-900 text-slate-300 transition-all duration-300 flex flex-col shadow-xl`}>
         <div className="p-5 text-white font-bold border-b border-slate-800 flex items-center gap-3">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white">T</div>
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">T</div>
           {isSidebarOpen && <span className="tracking-wider text-lg">T.I.B ERP</span>}
         </div>
         
-        <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+        <nav className="flex-1 overflow-y-auto py-4">
           {[
             {name: "Home", icon: <Home size={20}/>},
             {name: "Reservation", icon: <Calendar size={20}/>},
@@ -44,11 +50,9 @@ const Dashboard = () => {
             {name: "Suppliers", icon: <Briefcase size={20}/>},
             {name: "Hotels", icon: <Hotel size={20}/>},
             {name: "Accounting", icon: <Landmark size={20}/>},
-            {name: "Management", icon: <Settings size={20}/>},
-            {name: "All Booking", icon: <FileText size={20}/>},
-            {name: "Transportations", icon: <Bus size={20}/>}
+            {name: "Management", icon: <Settings size={20}/>}
           ].map((item) => (
-            <div key={item.name} className="px-6 py-3 hover:bg-slate-800 hover:text-white cursor-pointer flex items-center gap-4 transition-colors">
+            <div key={item.name} className="px-6 py-3 hover:bg-slate-800 hover:text-white cursor-pointer flex items-center gap-4 transition-all">
               {item.icon}
               {isSidebarOpen && <span className="text-sm font-medium">{item.name}</span>}
             </div>
@@ -69,89 +73,81 @@ const Dashboard = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            <Bell className="text-slate-400 cursor-pointer hover:text-blue-600" size={20} />
-            <div className="flex items-center gap-3 pl-6 border-l border-slate-100">
+            <Bell className="text-slate-400 cursor-pointer" size={20} />
+            <div className="flex items-center gap-3 pl-6 border-l">
               <div className="text-right">
-                <p className="text-sm font-bold text-slate-800 leading-none">ÖZCAN ALMAIS</p>
-                <p className="text-xs text-blue-500 font-semibold mt-1 cursor-pointer hover:underline">Admin Profile</p>
+                <p className="text-sm font-bold">ÖZCAN ALMAIS</p>
+                <p className="text-xs text-blue-500 font-semibold italic">Administrator</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-full flex items-center justify-center text-white font-bold shadow-md">
-                ÖA
-              </div>
+              <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">ÖA</div>
             </div>
           </div>
         </header>
 
         {/* DASHBOARD BODY */}
-        <main className="flex-1 overflow-y-auto p-8 bg-slate-50">
+        <main className="flex-1 overflow-y-auto p-8">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-2xl font-extrabold text-slate-800">Operational Overview</h2>
-            <span className="text-sm text-slate-500 bg-white px-4 py-2 rounded-full border shadow-sm font-medium">
-              Feb 6, 2026
-            </span>
+            <h2 className="text-2xl font-black text-slate-800">Operational Overview</h2>
+            <div className="text-sm font-bold bg-white px-4 py-2 rounded shadow-sm border border-slate-100">Feb 2026</div>
           </div>
           
-          {/* CARDS SECTION */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-            {cards.map((card, index) => (
-              <div key={index} className={`${card.color} text-white p-6 rounded-2xl shadow-lg hover:-translate-y-1 transition-all cursor-pointer relative overflow-hidden group`}>
-                <div className="absolute right-[-10px] top-[-10px] opacity-10 group-hover:scale-110 transition-transform">
-                    {React.cloneElement(card.icon, { size: 80 })}
-                </div>
-                <p className="text-xs font-bold uppercase tracking-wider opacity-80">{card.title}</p>
-                <p className="text-3xl font-black mt-2">{card.count}</p>
-              </div>
-            ))}
+          {/* CARDS */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            <div className="bg-blue-500 text-white p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all">
+              <p className="text-xs font-bold opacity-80 uppercase">Total Bookings</p>
+              <p className="text-3xl font-black mt-2">{loading ? "..." : bookings.length}</p>
+            </div>
+            <div className="bg-orange-500 text-white p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all">
+              <p className="text-xs font-bold opacity-80 uppercase">Pending Review</p>
+              <p className="text-3xl font-black mt-2">12</p>
+            </div>
+            <div className="bg-green-500 text-white p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all">
+              <p className="text-xs font-bold opacity-80 uppercase">Active Customers</p>
+              <p className="text-3xl font-black mt-2">890</p>
+            </div>
+            <div className="bg-emerald-400 text-white p-6 rounded-2xl shadow-lg transform hover:scale-105 transition-all">
+              <p className="text-xs font-bold opacity-80 uppercase">Accounting</p>
+              <p className="text-3xl font-black mt-2">Active</p>
+            </div>
           </div>
 
-          {/* CHARTS SECTION */}
+          {/* CHARTS */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-              <h3 className="text-lg font-bold mb-6 text-slate-700 flex items-center gap-2">
-                <div className="w-1 h-5 bg-blue-600 rounded-full"></div> Profit & Commission
-              </h3>
-              <div className="h-64">
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 h-96 flex flex-col">
+              <h3 className="text-lg font-bold mb-6 text-slate-700">Profit & Commission Analysis</h3>
+              <div className="flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie
-                      data={chartData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={70}
-                      outerRadius={90}
-                      paddingAngle={8}
-                      dataKey="value"
-                    >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
+                    <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
+                      {chartData.map((entry, index) => <Cell key={index} fill={entry.color} />)}
                     </Pie>
                     <Tooltip />
-                    <Legend verticalAlign="bottom" height={36}/>
+                    <Legend />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Quick Status Section */}
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 flex flex-col justify-center">
-                <h3 className="text-lg font-bold mb-4 text-slate-700">System Status</h3>
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                        <span className="text-sm font-medium">Server Status</span>
-                        <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full font-bold uppercase tracking-tighter">Online</span>
+            {/* RECENT BOOKINGS LIST */}
+            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
+              <h3 className="text-lg font-bold mb-6 text-slate-700">Live Booking Data (from API)</h3>
+              <div className="space-y-4">
+                {loading ? <p>Connecting to Server...</p> : bookings.map(b => (
+                  <div key={b.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border-l-4 border-blue-500 shadow-sm">
+                    <div>
+                      <p className="font-bold text-slate-800">{b.hotel}</p>
+                      <p className="text-xs text-slate-500 italic">Status: {b.status}</p>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                        <span className="text-sm font-medium">Database Port</span>
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full font-bold italic">5432</span>
-                    </div>
-                </div>
+                    <span className="text-xs font-black text-blue-600 bg-blue-50 px-2 py-1 rounded">ID: #{b.id}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </main>
 
         {/* FOOTER */}
-        <footer className="h-14 bg-white border-t flex items-center justify-center text-slate-500 text-sm font-bold tracking-tight shadow-inner">
+        <footer className="h-12 bg-white border-t flex items-center justify-center text-slate-400 text-xs font-bold">
           © ÖZCAN ALMAIS 2026 _ All rights reserved
         </footer>
       </div>
