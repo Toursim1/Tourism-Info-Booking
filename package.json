@@ -1,0 +1,12 @@
+{
+  "name": "tourism-info-booking",
+  "version": "1.0.0",
+  "description": "Tourism ERP Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
